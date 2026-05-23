@@ -66,18 +66,99 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
         <li class="nav-item">
           <a class="nav-link" href="#proyectos">Proyectos</a>
         </li>
+        <?php if (!$is_logged_in): ?>
+                <li class="nav-item">
+                    <button type="button" class="btn btn-outline-light ms-2" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        <i class="bi bi-box-arrow-in-right"></i> INICIAR SESIÓN
+                    </button>
+                </li>
+                <?php else: ?>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> <?php echo htmlspecialchars($_SESSION['username']); ?>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Mi Perfil</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Configuración</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="?logout=true"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a></li>
+                    </ul>
+                </li>
+                <?php endif; ?>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Modal de Inicio de Sesión -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h5 class="modal-title" id="loginModalLabel">
+                    <i class="bi bi-key"></i> Iniciar Sesión
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <?php if ($login_error): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i> <?php echo htmlspecialchars($login_error); ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <?php endif; ?>
+                <?php if ($login_success): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle"></i> <?php echo htmlspecialchars($login_success); ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <?php endif; ?>
+                
+                <form method="POST" action="" id="loginForm">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">
+                            <i class="bi bi-person"></i> Usuario
+                        </label>
+                        <input type="text" class="form-control" id="username" name="username" 
+                               placeholder="Ingresa tu usuario" required autocomplete="off">
+                        <div class="form-text">Usuario de prueba: admin</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">
+                            <i class="bi bi-lock"></i> Contraseña
+                        </label>
+                        <input type="password" class="form-control" id="password" name="password" 
+                               placeholder="Ingresa tu contraseña" required>
+                        <div class="form-text">Contraseña: 123456</div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember">
+                        <label class="form-check-label" for="remember">Recordarme</label>
+                    </div>
+                    <button type="submit" name="login" class="btn btn-primary w-100">
+                        <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                    </button>
+                </form>
+                
+                <hr>
+                <div class="text-center">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle"></i> Credenciales de demo: admin / 123456
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a href="#" class="btn btn-link">¿Olvidaste tu contraseña?</a>
+            </div>
+        </div>
+    </div>
+</div>
+
       </ul>
     </div>
   </div>
 </nav>
-<!-- Hero / Logo Section -->
-<div class="hero-section text-center">
-    <div class="container">
-        <h1 class="display-4">Mauricio Inostroza</h1>
-        <p class="lead">Desarrollador Web Full Stack</p>
-        <i class="bi bi-code-slash" style="font-size: 3rem;"></i>
-    </div>
-</div>
 
 <main class="py-5">
     <div class="container">
@@ -85,25 +166,24 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
         <!-- Biografía Section -->
         <section id="biografia" class="mb-5">
             <h2 class="text-center mb-4" style="color: #667eea;">BIOGRAFÍA</h2>
-            <div class="row align-items-center">
-                <div class="col-lg-8">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <p class="card-text">loeprelpoakfpoaskfpdsnfkdsanvkndavkcnxkvnkcx.</p>
-                            <p class="card-text">loremipsumbablablablablablablablablablblbalba</p>
-                            <p class="card-text">blabalblablablablabalblabalbalbalbalbalbalbalbalbalbalaba</p>
-                            <p class="card-text">me gusta sonic y tf2</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
+            <div class="col-lg-4">
                     <div class="card shadow-sm text-center bg-primary text-white">
                         <div class="card-body">
                             <i class="bi bi-person-circle" style="font-size: 4rem;"></i>
                             <h3 class="mt-3">Mauricio Inostroza</h3>
                             <p>Desarrollador Full Stack</p>
                             <i class="bi bi-github fs-3 me-2"></i>
-                            <i class="bi bi-linkedin fs-3"></i>
+                        </div>
+                    </div>
+                </div>
+            <div class="row align-items-center">
+                <div class="col-lg-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <p class="card-text">loeprelpoakfpoaskfpdsnfkdsanvkndavkcnxkvnkcx.</p>
+                            <p class="card-text">loremipsumbablablablablablablablablablblbalba</p>
+                            <p class="card-text">blabalblablablablabalblabalbalbalbalbalbalbalbalbalbalaba</p>
+                            <p class="card-text">me gusta sonic y tf2</p>
                         </div>
                     </div>
                 </div>
@@ -177,7 +257,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
                             <span class="badge bg-primary">2%</span>
                         </div>
                         <div class="progress" style="height: 10px;">
-                            <div class="progress-bar bg-danger" role="progressbar" style="width: 95%" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: 2%" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                     </div>
                     
@@ -518,3 +598,4 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
 
 </body>
 </html>
+
