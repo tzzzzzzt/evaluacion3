@@ -1,539 +1,340 @@
+<?php
+// index.php - Página principal del portafolio
+session_start();
+require_once 'database.php';
+
+// Obtener datos de la base de datos
+$biografia = getBiografia();
+$habilidades = getHabilidadesAgrupadas();
+$tecnologias = getTecnologias();
+$proyectos = getProyectos();
+
+$login_error = $_SESSION['login_error'] ?? '';
+unset($_SESSION['login_error']);
+$login_success = $_SESSION['login_success'] ?? '';
+unset($_SESSION['login_success']);
+?>
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portafolio Evaluacion 3</title>
+    <title>Portafolio - Mauricio Inostroza</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
-
 <body>
 
-    <?php
-    // Lógica de inicio de sesión
-    session_start();
-
-    $login_error = '';
-    $login_success = '';
-
-    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
-        $username = $_POST['username'] ?? '';
-        $password = $_POST['password'] ?? '';
-
-        // Credenciales de ejemplo
-        if ($username == 'admin' && $password == '123456') {
-            $_SESSION['logged_in'] = true;
-            $_SESSION['username'] = $username;
-            $login_success = 'Inicio de sesión exitoso!';
-        } else {
-            $login_error = 'Usuario o contraseña incorrectos';
-        }
-    }
-
-    if (isset($_GET['logout'])) {
-        session_destroy();
-        header('Location: ' . $_SERVER['PHP_SELF']);
-        exit();
-    }
-
-
-
-
-
-
-    $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
-    ?>
-
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
-        <div class="container-fluid">
-            <img src="assets/img/sonic.png" width="100px" alt="hola">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg bg-primary fixed-top" data-bs-theme="dark">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <img src="assets/img/sonic.png" width="50px" alt="logo">
+            <span class="ms-2">Mi Portafolio</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarColor01">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="#biografia"><i class="bi bi-person"></i> Biografia</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#habilidades"><i class="bi bi-star"></i> Habilidades</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#tecnologias"><i class="bi bi-code-slash"></i> Tecnologías</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#proyectos"><i class="bi bi-folder"></i> Proyectos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#contacto"><i class="bi bi-envelope"></i> Contacto</a>
+                </li>
+            </ul>
+            <button type="button" class="btn btn-outline-light ms-2" data-bs-toggle="modal" data-bs-target="#loginModal">
+                <i class="bi bi-box-arrow-in-right"></i> INICIAR SESIÓN
             </button>
-            <div class="collapse navbar-collapse" id="navbarColor01">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="btn btn-outline-light ms-2" href="#biografia">Biografia</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-outline-light ms-2" href="#habilidades">Habilidades</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-outline-light ms-2" href="#tecnologias">Tecnologías</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-outline-light ms-2" href="#proyectos">Proyectos</a>
-                    </li>
-                    <?php if (!$is_logged_in): ?>
-                        <li class="nav-item">
-                            <button type="button" class="btn btn-outline-light ms-2" data-bs-toggle="modal" data-bs-target="#loginModal">
-                                <i class="bi bi-box-arrow-in-right"></i> INICIAR SESIÓN
-                            </button>
-                        </li>
-                    <?php else: ?>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-person-circle"></i> <?php echo htmlspecialchars($_SESSION['username']); ?>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Mi Perfil</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Configuración</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item text-danger" href="?logout=true"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a></li>
-                            </ul>
-                        </li>
-                    <?php endif; ?>
+        </div>
+    </div>
+</nav>
+
+<!-- Modal de Login -->
+<div class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-key"></i> Iniciar Sesión</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <?php if ($login_error): ?>
+                    <div class="alert alert-danger"><?php echo $login_error; ?></div>
+                <?php endif; ?>
+                <form action="login.php" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Usuario</label>
+                        <input type="text" name="username" class="form-control" required>
+                        <small class="text-muted">Usuario: admin</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Contraseña</label>
+                        <input type="password" name="password" class="form-control" required>
+                        <small class="text-muted">Contraseña: 123456</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+                </form>
+                <hr>
+                <small class="text-muted">Credenciales de demo: admin / 123456</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<main class="py-5" style="margin-top: 56px;">
+    <div class="container">
+        <!-- Biografía Section -->
+        <section id="biografia" class="mb-5 pt-4">
+            <h2 class="text-center mb-5">BIOGRAFÍA</h2>
+            <div class="row align-items-center">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <div class="card shadow-lg text-center bg-primary text-white border-0">
+                        <div class="card-body py-4">
+                            <?php if ($biografia && $biografia['imagen']): ?>
+                                <img src="<?php echo htmlspecialchars($biografia['imagen']); ?>" 
+                                     class="rounded-circle mb-3" width="180" height="180"
+                                     style="object-fit: cover; border: 4px solid white;" alt="Foto">
+                            <?php else: ?>
+                                <i class="bi bi-person-circle" style="font-size: 8rem;"></i>
+                            <?php endif; ?>
+                            <h3 class="mt-3"><?php echo htmlspecialchars($biografia['nombre'] ?? 'Mauricio Inostroza'); ?></h3>
+                            <p><?php echo htmlspecialchars($biografia['titulo'] ?? 'Desarrollador Full Stack'); ?></p>
+                            <div class="d-flex justify-content-center gap-3">
+                                <a href="#" class="text-white"><i class="bi bi-github fs-4"></i></a>
+                                <a href="#" class="text-white"><i class="bi bi-linkedin fs-4"></i></a>
+                                <a href="#" class="text-white"><i class="bi bi-twitter fs-4"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body p-4">
+                            <p><?php echo nl2br(htmlspecialchars($biografia['descripcion'] ?? '')); ?></p>
+                            <p><?php echo nl2br(htmlspecialchars($biografia['descripcion2'] ?? '')); ?></p>
+                            <p><?php echo nl2br(htmlspecialchars($biografia['descripcion3'] ?? '')); ?></p>
+                            <p><?php echo nl2br(htmlspecialchars($biografia['descripcion4'] ?? '')); ?></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Habilidades Section - SOLO BLOQUES, SIN BARRAS -->
+        <section id="habilidades" class="mb-5 pt-4">
+            <h2 class="text-center mb-5">HABILIDADES Y HERRAMIENTAS</h2>
+            <div class="row g-4">
+                <?php if ($habilidades && count($habilidades) > 0): ?>
+                    <?php foreach ($habilidades as $categoria): ?>
+                        <div class="col-md-4">
+                            <div class="card shadow-sm h-100 border-0">
+                                <div class="card-header bg-primary text-white text-center py-3">
+                                    <h3 class="h5 mb-0"><?php echo htmlspecialchars($categoria['categoria']); ?></h3>
+                                </div>
+                                <div class="card-body text-center">
+                                    <?php 
+                                    $habilidadesLista = json_decode($categoria['habilidades'], true);
+                                    if ($habilidadesLista && is_array($habilidadesLista)):
+                                        foreach ($habilidadesLista as $habilidad): 
+                                    ?>
+                                        <span class="skill-badge">
+                                            <?php echo htmlspecialchars($habilidad['nombre']); ?>
+                                        </span>
+                                    <?php 
+                                        endforeach;
+                                    endif; 
+                                    ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col-12 text-center">
+                        <div class="alert alert-info">No hay habilidades cargadas aún.</div>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </section>
+
+        <!-- Tecnologías Section -->
+        <section id="tecnologias" class="mb-5 pt-4">
+            <h2 class="text-center mb-5">TECNOLOGÍAS DOMINADAS</h2>
+            <div class="row">
+                <?php if ($tecnologias && count($tecnologias) > 0): ?>
+                    <?php 
+                    $mitad = ceil(count($tecnologias) / 2);
+                    $tecnologias_col1 = array_slice($tecnologias, 0, $mitad);
+                    $tecnologias_col2 = array_slice($tecnologias, $mitad);
+                    ?>
+                    <div class="col-md-6">
+                        <?php foreach ($tecnologias_col1 as $tecnologia): ?>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>
+                                        <i class="bi bi-<?php echo htmlspecialchars($tecnologia['icono'] ?? 'code-slash'); ?>"></i>
+                                        <?php echo htmlspecialchars($tecnologia['nombre']); ?>
+                                    </span>
+                                    <span class="badge bg-primary"><?php echo $tecnologia['porcentaje']; ?>%</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-<?php echo htmlspecialchars($tecnologia['color'] ?? 'primary'); ?>" 
+                                         style="width: <?php echo $tecnologia['porcentaje']; ?>%"></div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <div class="col-md-6">
+                        <?php foreach ($tecnologias_col2 as $tecnologia): ?>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>
+                                        <i class="bi bi-<?php echo htmlspecialchars($tecnologia['icono'] ?? 'code-slash'); ?>"></i>
+                                        <?php echo htmlspecialchars($tecnologia['nombre']); ?>
+                                    </span>
+                                    <span class="badge bg-primary"><?php echo $tecnologia['porcentaje']; ?>%</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-<?php echo htmlspecialchars($tecnologia['color'] ?? 'primary'); ?>" 
+                                         style="width: <?php echo $tecnologia['porcentaje']; ?>%"></div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="col-12 text-center">
+                        <div class="alert alert-info">No hay tecnologías cargadas aún.</div>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </section>
+
+        <!-- Proyectos Section -->
+        <section id="proyectos" class="mb-5 pt-4">
+            <h2 class="text-center mb-5">PROYECTOS DESTACADOS</h2>
+            <div class="row g-4">
+                <?php if ($proyectos && count($proyectos) > 0): ?>
+                    <?php foreach ($proyectos as $proyecto): ?>
+                        <div class="col-md-4">
+                            <div class="card shadow-sm card-hover h-100 border-0">
+                                <div class="proyecto-img">
+                                    <i class="bi bi-<?php echo htmlspecialchars($proyecto['icono'] ?? 'folder'); ?>"></i>
+                                </div>
+                                <div class="card-body">
+                                    <h3 class="h5 card-title"><?php echo htmlspecialchars($proyecto['titulo']); ?></h3>
+                                    <p class="card-text text-muted"><?php echo htmlspecialchars($proyecto['descripcion']); ?></p>
+                                    <a href="#" class="btn btn-primary btn-sm">Ver más <i class="bi bi-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col-12 text-center">
+                        <div class="alert alert-info">No hay proyectos cargados aún.</div>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </section>
+
+        <!-- Contacto Section -->
+        <section id="contacto" class="mb-5 pt-4">
+            <h2 class="text-center mb-5">CONTACTO</h2>
+            <div class="row">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body p-4">
+                            <hr>
+                            <div class="mb-3">
+                                <i class="bi bi-envelope-fill contacto-icon"></i>
+                                <strong>Email:</strong> minostroza2025@alu.uct.cl
+                            </div>
+                            <div class="mb-3">
+                                <i class="bi bi-telephone-fill contacto-icon"></i>
+                                <strong>Teléfono:</strong> +56 9 1234 5678
+                            </div>
+                            <div class="mb-3">
+                                <i class="bi bi-geo-alt-fill contacto-icon"></i>
+                                <strong>Ubicación:</strong> Temuco, Chile
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body p-4">
+                            <h4 class="mb-4"><i class="bi bi-send"></i> Envíame un mensaje</h4>
+                            <form action="enviar_contacto.php" method="POST">
+                                <div class="mb-3">
+                                    <label class="form-label">Nombre</label>
+                                    <input type="text" name="nombre" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" name="email" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Mensaje</label>
+                                    <textarea name="mensaje" class="form-control" rows="4" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Enviar Mensaje</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="footer py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <img src="assets/img/sonic.png" width="60px" alt="logo">
+                <h5 class="mt-3">MAURICIO INOSTROZA</h5>
+                <p>Desarrollador Web Full Stack</p>
+            </div>
+            <div class="col-md-4">
+                <h5>Enlaces Rápidos</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#biografia" class="text-decoration-none text-white-50">Biografía</a></li>
+                    <li><a href="#habilidades" class="text-decoration-none text-white-50">Habilidades</a></li>
+                    <li><a href="#tecnologias" class="text-decoration-none text-white-50">Tecnologías</a></li>
+                    <li><a href="#proyectos" class="text-decoration-none text-white-50">Proyectos</a></li>
                 </ul>
             </div>
-        </div>
-    </nav>
-
-    <!-- Modal de Inicio de Sesión -->
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                    <h5 class="modal-title" id="loginModalLabel">
-                        <i class="bi bi-key"></i> Iniciar Sesión
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <?php if ($login_error): ?>
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="bi bi-exclamation-triangle"></i> <?php echo htmlspecialchars($login_error); ?>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    <?php endif; ?>
-                    <?php if ($login_success): ?>
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="bi bi-check-circle"></i> <?php echo htmlspecialchars($login_success); ?>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    <?php endif; ?>
-
-                    <form method="POST" action="" id="loginForm">
-                        <div class="mb-3">
-                            <label for="username" class="form-label">
-                                <i class="bi bi-person"></i> Usuario
-                            </label>
-                            <input type="text" class="form-control" id="username" name="username"
-                                placeholder="Ingresa tu usuario" required autocomplete="off">
-                            <div class="form-text">Usuario de prueba: admin</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">
-                                <i class="bi bi-lock"></i> Contraseña
-                            </label>
-                            <input type="password" class="form-control" id="password" name="password"
-                                placeholder="Ingresa tu contraseña" required>
-                            <div class="form-text">Contraseña: 123456</div>
-                        </div>
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="remember">
-                            <label class="form-check-label" for="remember">Recordarme</label>
-                        </div>
-                        <button type="submit" name="login" class="btn btn-primary w-100">
-                            <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
-                        </button>
-                    </form>
-
-                    <hr>
-                    <div class="text-center">
-                        <small class="text-muted">
-                            <i class="bi bi-info-circle"></i> Credenciales de demo: admin / 123456
-                        </small>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <a href="#" class="btn btn-link">¿Olvidaste tu contraseña?</a>
-                </div>
+            <div class="col-md-4">
+                <h5>Contacto</h5>
+                <p><i class="bi bi-envelope"></i> minostroza2025@alu.uct.cl</p>
+                <p><i class="bi bi-telephone"></i> +56 9 1234 5678</p>
+                <p><i class="bi bi-geo-alt"></i> Temuco, Chile</p>
             </div>
         </div>
-    </div>
-
-    </ul>
-    </div>
-    </div>
-    </nav>
-
-    <main class="py-5">
-        <div class="container">
-
-            <!-- Biografía Section -->
-            <section id="biografia" class="mb-5">
-                <h2 class="text-center mb-4" style="color: #667eea;">BIOGRAFÍA</h2>
-                <div class="row align-items-center">
-                    <div class="col-lg-4">
-                        <div class="card shadow-sm text-center bg-primary text-white">
-                            <div class="card-body">
-                                <img src="assets/img/yo.png" style="font-size: 4rem;" width="150px"></i>
-                                <h3 class="mt-3">Mauricio Inostroza</h3>
-                                <p>Desarrollador Full Stack</p>
-                                <i class="bi bi-github fs-3 me-2"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-8">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <p class="card-text">Soy un desarrollador web apasionado por la tecnología y la creación de soluciones innovadoras. 
-                                    Con más de 20 años de experiencia en el desarrollo de aplicaciones web, me especializo en crear experiencias digitales únicas y funcionales.</p>
-                                <p class="card-text">Mi viaje en el mundo de la programación comenzó cuando descubrí mi alto coeficiente intelectual de más de 1020319203120321030210 dígitos</p>
-                                <p class="card-text">A lo largo de mi carrera, he trabajado con diversas empresas y startups como google facebook steam y sony tambien hice la playstation 2 de hecho fue mi idea</p>
-                                <p class="card-text">me gusta sonic y tf2</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            <!-- Habilidades Section -->
-            <section id="habilidades" class="mb-5">
-
-                <h2 class="text-center mb-4" style="color: #667eea;">HABILIDADES Y HERRAMIENTAS</h2>
-                <div class="row g-4">
-                    <div class="col-md-4">
-                        <div class="card shadow-sm h-100">
-                            <div class="card-header bg-primary text-white text-center">
-                                <h3 class="h5 mb-0">Frontend</h3>
-                            </div>
-                            <div class="card-body text-center">
-                                <span class="badge bg-secondary skill-badge">HTML5</span>
-                                <span class="badge bg-secondary skill-badge">CSS3</span>
-                                <span class="badge bg-secondary skill-badge">JavaScript</span>
-                                <span class="badge bg-secondary skill-badge">React</span>
-                                <span class="badge bg-secondary skill-badge">Vue.js</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card shadow-sm h-100">
-                            <div class="card-header bg-primary text-white text-center">
-                                <h3 class="h5 mb-0">Backend</h3>
-                            </div>
-                            <div class="card-body text-center">
-                                <span class="badge bg-secondary skill-badge">PHP</span>
-                                <span class="badge bg-secondary skill-badge">Python</span>
-                                <span class="badge bg-secondary skill-badge">Node.js</span>
-                                <span class="badge bg-secondary skill-badge">MySQL</span>
-                                <span class="badge bg-secondary skill-badge">MongoDB</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card shadow-sm h-100">
-                            <div class="card-header bg-primary text-white text-center">
-                                <h3 class="h5 mb-0">Herramientas</h3>
-                            </div>
-                            <div class="card-body text-center">
-                                <span class="badge bg-secondary skill-badge">GitHub</span>
-                                <span class="badge bg-secondary skill-badge">Bootstrap</span>
-                                <span class="badge bg-secondary skill-badge">Docker</span>
-                                <span class="badge bg-secondary skill-badge">AWS</span>
-                                <span class="badge bg-secondary skill-badge">Figma</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="tecnologias" class="mb-5">
-                <h2 class="text-center mb-4" style="color: #667eea;">TECNOLOGÍAS DOMINADAS</h2>
-
-                <div class="row g-4">
-                    <!-- Columna 1 -->
-                    <div class="col-md-6">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h3 class="h5 mb-3">Lenguajes de Programación</h3>
-
-                                <!-- HTML -->
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span><i class="bi bi-filetype-html text-danger"></i> HTML5</span>
-                                        <span class="badge bg-primary">90%</span>
-                                    </div>
-                                    <div class="progress" style="height: 10px;">
-                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-
-                                <!-- CSS -->
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span><i class="bi bi-filetype-css text-primary"></i> CSS3</span>
-                                        <span class="badge bg-primary">90%</span>
-                                    </div>
-                                    <div class="progress" style="height: 10px;">
-                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-
-                                <!-- JavaScript -->
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span><i class="bi bi-filetype-js text-warning"></i> JavaScript</span>
-                                        <span class="badge bg-primary">85%</span>
-                                    </div>
-                                    <div class="progress" style="height: 10px;">
-                                        <div class="progress-bar bg-warning" role="progressbar" style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-
-                                <!-- PHP -->
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span><i class="bi bi-filetype-php text-info"></i> PHP</span>
-                                        <span class="badge bg-primary">60%</span>
-                                    </div>
-                                    <div class="progress" style="height: 10px;">
-                                        <div class="progress-bar bg-info" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Columna 2 -->
-                    <div class="col-md-6">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h3 class="h5 mb-3">Frameworks & Herramientas</h3>
-
-                                <!-- Bootstrap -->
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span><i class="bi bi-bootstrap-fill text-primary"></i> Bootstrap</span>
-                                        <span class="badge bg-primary">20%</span>
-                                    </div>
-                                    <div class="progress" style="height: 10px;">
-                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-
-                                <!-- GitHub -->
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span><i class="bi bi-github"></i> GitHub</span>
-                                        <span class="badge bg-primary">85%</span>
-                                    </div>
-                                    <div class="progress" style="height: 10px;">
-                                        <div class="progress-bar bg-secondary" role="progressbar" style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-
-                                <!-- Git -->
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span><i class="bi bi-git text-danger"></i> Git</span>
-                                        <span class="badge bg-primary">82%</span>
-                                    </div>
-                                    <div class="progress" style="height: 10px;">
-                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 82%" aria-valuenow="82" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-
-                                <!-- jQuery -->
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span><i class="bi bi-code-square"></i> jQuery</span>
-                                        <span class="badge bg-primary">10%</span>
-                                    </div>
-                                    <div class="progress" style="height: 10px;">
-                                        <div class="progress-bar bg-success" role="progressbar" style="width: 10%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Columna 3 (Opcional - más tecnologías) -->
-                    <div class="col-md-6">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h3 class="h5 mb-3">Bases de Datos</h3>
-
-                                <!-- MySQL -->
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span><i class="bi bi-database"></i> MySQL</span>
-                                        <span class="badge bg-primary">85%</span>
-                                    </div>
-                                    <div class="progress" style="height: 10px;">
-                                        <div class="progress-bar bg-success" role="progressbar" style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-
-                                <!-- PostgreSQL -->
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span><i class="bi bi-database"></i> PostgreSQL</span>
-                                        <span class="badge bg-primary">70%</span>
-                                    </div>
-                                    <div class="progress" style="height: 10px;">
-                                        <div class="progress-bar bg-info" role="progressbar" style="width: 70%" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-
-                                <!-- MongoDB -->
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span><i class="bi bi-database"></i> MongoDB</span>
-                                        <span class="badge bg-primary">65%</span>
-                                    </div>
-                                    <div class="progress" style="height: 10px;">
-                                        <div class="progress-bar bg-warning" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Columna 4 -->
-                    <div class="col-md-6">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h3 class="h5 mb-3">Otras Tecnologías</h3>
-
-                                <!-- React -->
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span><i class="bi bi-braces"></i> React</span>
-                                        <span class="badge bg-primary">70%</span>
-                                    </div>
-                                    <div class="progress" style="height: 10px;">
-                                        <div class="progress-bar bg-info" role="progressbar" style="width: 70%" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-
-                                <!-- Node.js -->
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span><i class="bi bi-node-plus"></i> Node.js</span>
-                                        <span class="badge bg-primary">75%</span>
-                                    </div>
-                                    <div class="progress" style="height: 10px;">
-                                        <div class="progress-bar bg-success" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-
-                                <!-- Docker -->
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span><i class="bi bi-box"></i> Docker</span>
-                                        <span class="badge bg-primary">60%</span>
-                                    </div>
-                                    <div class="progress" style="height: 10px;">
-                                        <div class="progress-bar bg-secondary" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            <!-- Proyectos Section -->
-            <section id="proyectos" class="mb-5">
-                <h2 class="text-center mb-4" style="color: #667eea;">PROYECTOS</h2>
-                <div class="row g-4">
-                    <div class="col-md-4">
-                        <div class="card shadow-sm card-hover h-100">
-                            <div class="proyecto-img">
-                                <i class="bi bi-phone"></i>
-                            </div>
-                            <div class="card-body">
-                                <h3 class="h5 card-title">PROYECTO 1</h3>
-                                <p class="card-text">el mejor fokin proyecto del univelso</p>
-                                <a href="#" class="btn btn-primary">Ver más <i class="bi bi-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card shadow-sm card-hover h-100">
-                            <div class="proyecto-img">
-                                <i class="bi bi-cart"></i>
-                            </div>
-                            <div class="card-body">
-                                <h3 class="h5 card-title">PROYECTO 2</h3>
-                                <p class="card-text">hola </p>
-                                <a href="#" class="btn btn-primary">Ver más <i class="bi bi-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card shadow-sm card-hover h-100">
-                            <div class="proyecto-img">
-                                <i class="bi bi-graph-up"></i>
-                            </div>
-                            <div class="card-body">
-                                <h3 class="h5 card-title">PROYECTO 3</h3>
-                                <p class="card-text">anuncio de futura presidencia</p>
-                                <a href="#" class="btn btn-primary">Ver más <i class="bi bi-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer py-5">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <h4>MAURICIO INOSTROZA</h4>
-                    <p>Desarrollador Web Full Stack</p>
-                    <p>Transformando ideas en código</p>
-                    <i class="bi bi-code-slash fs-3"></i>
-                </div>
-                <div class="col-md-4"></div>
-                <div class="col-md-4">
-                    <h4>CONTACTO</h4>
-                    <p><i class="bi bi-envelope"></i> minostroza2025@alu.uct.cl</p>
-                    <p><i class="bi bi-telephone"></i> +56 9 1234 5678</p>
-                    <p><i class="bi bi-geo-alt"></i> Temuco, Chile</p>
-                </div>
-            </div>
-            <hr class="mt-4 mb-3 bg-light">
-            <div class="text-center">
-                <p class="mb-0">COPYRIGHT © 2026 MAURICIO INOSTROZA - Todos los derechos reservados</p>
-            </div>
+        <hr class="mt-4 mb-3 bg-secondary">
+        <div class="text-center">
+            <p class="mb-0">&copy; <?php echo date('Y'); ?> MAURICIO INOSTROZA - Todos los derechos reservados</p>
         </div>
-    </footer>
+    </div>
+</footer>
 
-    <!-- Bootstrap 5 JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        // Smooth scroll para los enlaces
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Tooltips initialization (opcional)
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        });
-    </script>
-
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Custom JS -->
+<script src="assets/js/main.js"></script>
 </body>
-
 </html>
