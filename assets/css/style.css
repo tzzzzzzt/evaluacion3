@@ -1,0 +1,224 @@
+/* ============================================
+   style.css - Estilos generales del portafolio
+   ============================================ */
+
+:root {
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --dark-bg: #2c3e50;
+    --text-muted: #6c757d;
+    --transition-speed: 0.3s;
+}
+
+/* Reset y estilos base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f6f9;
+    color: #333;
+}
+
+/* Navbar personalizado */
+.navbar {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar-brand img {
+    transition: transform var(--transition-speed) ease;
+}
+
+.navbar-brand img:hover {
+    transform: scale(1.05);
+}
+
+.navbar .nav-link {
+    transition: all var(--transition-speed) ease;
+    border-radius: 5px;
+}
+
+.navbar .nav-link:hover {
+    background-color: rgba(255,255,255,0.1);
+    transform: translateY(-2px);
+}
+
+/* Badges de habilidades */
+.skill-badge {
+    font-size: 0.9rem;
+    margin: 0.2rem;
+    padding: 0.5rem 1rem;
+    display: inline-block;
+    border-radius: 25px;
+    transition: all var(--transition-speed) ease;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.skill-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* Cards de proyectos */
+.proyecto-img {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    padding: 2rem;
+    text-align: center;
+    color: white;
+    border-radius: 10px 10px 0 0;
+}
+
+.proyecto-img i {
+    font-size: 4rem;
+    transition: transform var(--transition-speed) ease;
+}
+
+.card-hover {
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.card-hover:hover .proyecto-img i {
+    transform: scale(1.1);
+}
+
+/* Secciones */
+section {
+    scroll-margin-top: 80px;
+}
+
+section h2 {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+section h2:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border-radius: 3px;
+}
+
+/* Barras de progreso */
+.progress {
+    background-color: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 10px;
+}
+
+.progress-bar {
+    transition: width 1s ease-in-out;
+}
+
+/* Cards de biografía */
+.card {
+    border: none;
+    overflow: hidden;
+}
+
+.card.bg-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--dark-bg);
+    color: white;
+    margin-top: 3rem;
+}
+
+.footer a {
+    transition: color var(--transition-speed) ease;
+}
+
+.footer a:hover {
+    color: var(--primary-color) !important;
+}
+
+/* Iconos de contacto */
+.contacto-icon {
+    font-size: 2rem;
+    margin-right: 1rem;
+    color: var(--primary-color);
+}
+
+/* Modal de login */
+.modal-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .skill-badge {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .proyecto-img i {
+        font-size: 2.5rem;
+    }
+    
+    .contacto-icon {
+        font-size: 1.5rem;
+    }
+    
+    section h2 {
+        font-size: 1.8rem;
+    }
+}
+
+/* Utilidades */
+.text-primary-custom {
+    color: var(--primary-color);
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+
+.btn-gradient {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border: none;
+    color: white;
+    transition: all var(--transition-speed) ease;
+}
+
+.btn-gradient:hover {
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
