@@ -131,16 +131,12 @@ INSERT INTO tecnologias (nombre, porcentaje, icono, color, orden) VALUES
 ('CSS3', 90, 'filetype-css', 'primary', 2),
 ('JavaScript', 85, 'filetype-js', 'warning', 3),
 ('PHP', 60, 'filetype-php', 'info', 4),
-('Bootstrap', 80, 'bootstrap', 'primary', 5),
+('Bootstrap', 70, 'bootstrap', 'primary', 5),
 ('GitHub', 85, 'github', 'secondary', 6),
 ('Git', 82, 'git', 'danger', 7),
-('jQuery', 10, 'code-square', 'success', 8),
-('MySQL', 85, 'database', 'success', 9),
-('PostgreSQL', 70, 'database', 'info', 10),
-('MongoDB', 65, 'database', 'warning', 11),
-('React', 70, 'braces', 'info', 12),
-('Node.js', 75, 'node-plus', 'success', 13),
-('Docker', 60, 'box', 'secondary', 14);
+('MySQL', 85, 'database', 'success', 8),
+('MongoDB', 65, 'database', 'warning', 9),
+('Docker', 60, 'box', 'secondary', 10);
 
 -- =============================================
 -- TABLA: proyectos

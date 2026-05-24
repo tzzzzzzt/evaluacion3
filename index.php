@@ -80,17 +80,14 @@ unset($_SESSION['login_success']);
                     <div class="mb-3">
                         <label class="form-label">Usuario</label>
                         <input type="text" name="username" class="form-control" required>
-                        <small class="text-muted">Usuario: admin</small>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Contraseña</label>
                         <input type="password" name="password" class="form-control" required>
-                        <small class="text-muted">Contraseña: 123456</small>
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
                 </form>
                 <hr>
-                <small class="text-muted">Credenciales de demo: admin / 123456</small>
             </div>
         </div>
     </div>
@@ -115,9 +112,7 @@ unset($_SESSION['login_success']);
                             <h3 class="mt-3"><?php echo htmlspecialchars($biografia['nombre'] ?? 'Mauricio Inostroza'); ?></h3>
                             <p><?php echo htmlspecialchars($biografia['titulo'] ?? 'Desarrollador Full Stack'); ?></p>
                             <div class="d-flex justify-content-center gap-3">
-                                <a href="#" class="text-white"><i class="bi bi-github fs-4"></i></a>
-                                <a href="#" class="text-white"><i class="bi bi-linkedin fs-4"></i></a>
-                                <a href="#" class="text-white"><i class="bi bi-twitter fs-4"></i></a>
+                                <a href="https://github.com/tzzzzzzt" class="text-white"><i class="bi bi-github fs-4"></i></a>
                             </div>
                         </div>
                     </div>
@@ -263,10 +258,6 @@ unset($_SESSION['login_success']);
                                 <strong>Email:</strong> minostroza2025@alu.uct.cl
                             </div>
                             <div class="mb-3">
-                                <i class="bi bi-telephone-fill contacto-icon"></i>
-                                <strong>Teléfono:</strong> +56 9 1234 5678
-                            </div>
-                            <div class="mb-3">
                                 <i class="bi bi-geo-alt-fill contacto-icon"></i>
                                 <strong>Ubicación:</strong> Temuco, Chile
                             </div>
@@ -321,7 +312,6 @@ unset($_SESSION['login_success']);
             <div class="col-md-4">
                 <h5>Contacto</h5>
                 <p><i class="bi bi-envelope"></i> minostroza2025@alu.uct.cl</p>
-                <p><i class="bi bi-telephone"></i> +56 9 1234 5678</p>
                 <p><i class="bi bi-geo-alt"></i> Temuco, Chile</p>
             </div>
         </div>
@@ -334,7 +324,5 @@ unset($_SESSION['login_success']);
 
 <!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Custom JS -->
-<script src="assets/js/main.js"></script>
 </body>
 </html>
