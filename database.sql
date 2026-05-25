@@ -147,6 +147,7 @@ CREATE TABLE IF NOT EXISTS proyectos (
     titulo VARCHAR(200) NOT NULL,
     descripcion TEXT,
     icono VARCHAR(50),
+    github_url VARCHAR(500),
     imagen VARCHAR(255),
     url VARCHAR(500),
     tecnologias TEXT,
@@ -157,10 +158,11 @@ CREATE TABLE IF NOT EXISTS proyectos (
 );
 
 -- Insertar proyectos iniciales
-INSERT INTO proyectos (titulo, descripcion, icono, orden) VALUES 
-('PROYECTO 1', 'el mejor fokin proyecto del universo', 'phone', 1),
-('PROYECTO 2', 'hola', 'cart', 2),
-('PROYECTO 3', 'anuncio de futura presidencia', 'graph-up', 3);
+INSERT INTO proyectos (titulo, descripcion, icono, github_url, orden) VALUES 
+('English Project', 'el mejor fokin proyecto del universo q hice yo solito', 'phone', 'https://github.com/tzzzzzzt/EnglishProject11', 1),
+('Proyecto Gestor de Tareas', 'una prueba', 'cart', 'https://github.com/tzzzzzzt/proyecto_tareas_gestor', 2),
+('Proyecto MirandaPet', 'mirandapet volvera', 'graph-up', 'https://github.com/tareasmiranda/mirandapet',3);
+
 
 -- =============================================
 -- TABLA: contacto_mensajes

@@ -46,7 +46,7 @@ function setupTecnologiaEdicion() {
     });
 }
 
-// Editar Proyecto
+// Editar Proyecto (actualizado con github_url)
 function setupProyectoEdicion() {
     document.querySelectorAll('.edit-proyecto').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -54,11 +54,13 @@ function setupProyectoEdicion() {
             const editTitulo = document.getElementById('edit_proy_titulo');
             const editDescripcion = document.getElementById('edit_proy_descripcion');
             const editIcono = document.getElementById('edit_proy_icono');
+            const editGithub = document.getElementById('edit_proy_github');
             
             if (editId) editId.value = this.dataset.id;
             if (editTitulo) editTitulo.value = this.dataset.titulo;
             if (editDescripcion) editDescripcion.value = this.dataset.descripcion;
             if (editIcono) editIcono.value = this.dataset.icono;
+            if (editGithub) editGithub.value = this.dataset.github || '';
             
             const modal = document.getElementById('editProyectoModal');
             if (modal) {

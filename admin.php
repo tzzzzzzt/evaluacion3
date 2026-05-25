@@ -142,42 +142,44 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
     
-    // ==================== AGREGAR PROYECTO ====================
-    if (isset($_POST['add_proyecto'])) {
-        try {
-            $data = [
-                'titulo' => $_POST['titulo'],
-                'descripcion' => $_POST['descripcion'],
-                'icono' => $_POST['icono'],
-                'orden' => null
-            ];
-            addProyecto($data);
-            $message = '<div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="bi bi-check-circle"></i> Proyecto agregado exitosamente
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>';
-        } catch(Exception $e) {
-            $error = '<div class="alert alert-danger">Error: ' . $e->getMessage() . '</div>';
-        }
+// ==================== AGREGAR PROYECTO ====================
+if (isset($_POST['add_proyecto'])) {
+    try {
+        $data = [
+            'titulo' => $_POST['titulo'],
+            'descripcion' => $_POST['descripcion'],
+            'icono' => $_POST['icono'],
+            'github_url' => $_POST['github_url'] ?? null,
+            'orden' => null
+        ];
+        addProyecto($data);
+        $message = '<div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle"></i> Proyecto agregado exitosamente
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>';
+    } catch(Exception $e) {
+        $error = '<div class="alert alert-danger">Error: ' . $e->getMessage() . '</div>';
     }
-    
-    // ==================== EDITAR PROYECTO ====================
-    if (isset($_POST['edit_proyecto'])) {
-        try {
-            $data = [
-                'titulo' => $_POST['titulo'],
-                'descripcion' => $_POST['descripcion'],
-                'icono' => $_POST['icono']
-            ];
-            updateProyecto($_POST['proyecto_id'], $data);
-            $message = '<div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="bi bi-check-circle"></i> Proyecto actualizado exitosamente
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>';
-        } catch(Exception $e) {
-            $error = '<div class="alert alert-danger">Error: ' . $e->getMessage() . '</div>';
-        }
+}
+
+// ==================== EDITAR PROYECTO ====================
+if (isset($_POST['edit_proyecto'])) {
+    try {
+        $data = [
+            'titulo' => $_POST['titulo'],
+            'descripcion' => $_POST['descripcion'],
+            'icono' => $_POST['icono'],
+            'github_url' => $_POST['github_url'] ?? null
+        ];
+        updateProyecto($_POST['proyecto_id'], $data);
+        $message = '<div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle"></i> Proyecto actualizado exitosamente
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>';
+    } catch(Exception $e) {
+        $error = '<div class="alert alert-danger">Error: ' . $e->getMessage() . '</div>';
     }
+}
     
     // ==================== ELIMINAR PROYECTO ====================
     if (isset($_POST['delete_proyecto'])) {
@@ -211,6 +213,8 @@ $stats = getDashboardStats();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Admin CSS -->
+    <link rel="stylesheet" href="assets/css/admin.css">
 </head>
 <body>
 
@@ -692,112 +696,139 @@ $stats = getDashboardStats();
                 </button>
             </div>
             
-            <div class="row">
-                <?php foreach ($proyectos as $proyecto): ?>
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <i class="bi bi-<?php echo $proyecto['icono']; ?>" style="font-size: 3rem; color: #667eea;"></i>
-                                </div>
-                                <h5 class="card-title"><?php echo htmlspecialchars($proyecto['titulo']); ?></h5>
-                                <p class="card-text text-muted"><?php echo htmlspecialchars($proyecto['descripcion']); ?></p>
-                                <div class="d-flex justify-content-end gap-2">
-                                    <button class="btn btn-sm btn-primary edit-proyecto"
-                                            data-id="<?php echo $proyecto['id']; ?>"
-                                            data-titulo="<?php echo htmlspecialchars($proyecto['titulo']); ?>"
-                                            data-descripcion="<?php echo htmlspecialchars($proyecto['descripcion']); ?>"
-                                            data-icono="<?php echo $proyecto['icono']; ?>">
-                                        <i class="bi bi-pencil"></i> Editar
-                                    </button>
-                                    <form method="POST" style="display: inline;">
-                                        <input type="hidden" name="proyecto_id" value="<?php echo $proyecto['id']; ?>">
-                                        <button type="submit" name="delete_proyecto" class="btn btn-sm btn-danger" 
-                                                onclick="return confirm('¿Eliminar este proyecto?')">
-                                            <i class="bi bi-trash"></i> Eliminar
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+            <!-- Listado de proyectos en admin -->
+<div class="row">
+    <?php foreach ($proyectos as $proyecto): ?>
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <i class="bi bi-<?php echo $proyecto['icono']; ?>" style="font-size: 3rem; color: #667eea;"></i>
                     </div>
-                <?php endforeach; ?>
+                    <h5 class="card-title"><?php echo htmlspecialchars($proyecto['titulo']); ?></h5>
+                    <p class="card-text text-muted"><?php echo htmlspecialchars($proyecto['descripcion']); ?></p>
+                    <?php if (!empty($proyecto['github_url'])): ?>
+                        <div class="mb-2">
+                            <a href="<?php echo htmlspecialchars($proyecto['github_url']); ?>" 
+                               target="_blank" class="text-decoration-none">
+                                <i class="bi bi-github"></i> Ver repositorio
+                            </a>
+                        </div>
+                    <?php endif; ?>
+                    <div class="d-flex justify-content-end gap-2 mt-3">
+                        <button class="btn btn-sm btn-primary edit-proyecto"
+                                data-id="<?php echo $proyecto['id']; ?>"
+                                data-titulo="<?php echo htmlspecialchars($proyecto['titulo']); ?>"
+                                data-descripcion="<?php echo htmlspecialchars($proyecto['descripcion']); ?>"
+                                data-icono="<?php echo $proyecto['icono']; ?>"
+                                data-github="<?php echo htmlspecialchars($proyecto['github_url'] ?? ''); ?>">
+                            <i class="bi bi-pencil"></i> Editar
+                        </button>
+                        <form method="POST" style="display: inline;">
+                            <input type="hidden" name="proyecto_id" value="<?php echo $proyecto['id']; ?>">
+                            <button type="submit" name="delete_proyecto" class="btn btn-sm btn-danger" 
+                                    onclick="return confirm('¿Eliminar este proyecto?')">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
+        </div>
+    <?php endforeach; ?>
+</div>
         </div>
         
         <!-- Modal Agregar Proyecto -->
-        <div class="modal fade" id="addProyectoModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title">
-                            <i class="bi bi-plus-circle"></i> Agregar Proyecto
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-                    <form method="POST">
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label class="form-label">Título</label>
-                                <input type="text" name="titulo" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Descripción</label>
-                                <textarea name="descripcion" class="form-control" rows="3" required></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Icono</label>
-                                <input type="text" name="icono" class="form-control" placeholder="Ej: phone, cart, graph-up">
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" name="add_proyecto" class="btn btn-success">Agregar</button>
-                        </div>
-                    </form>
-                </div>
+<div class="modal fade" id="addProyectoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle"></i> Agregar Proyecto
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
+            <form method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Título</label>
+                        <input type="text" name="titulo" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea name="descripcion" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Icono</label>
+                        <input type="text" name="icono" class="form-control" placeholder="Ej: phone, cart, graph-up">
+                        <small class="text-muted">Icono de Bootstrap Icons</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-github"></i> URL de GitHub
+                        </label>
+                        <input type="url" name="github_url" class="form-control" 
+                               placeholder="https://github.com/usuario/proyecto">
+                        <small class="text-muted">Enlace al repositorio del proyecto</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" name="add_proyecto" class="btn btn-success">Agregar</button>
+                </div>
+            </form>
         </div>
+    </div>
+</div>
         
-        <!-- Modal Editar Proyecto -->
-        <div class="modal fade" id="editProyectoModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-warning">
-                        <h5 class="modal-title">
-                            <i class="bi bi-pencil"></i> Editar Proyecto
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <form method="POST">
-                        <div class="modal-body">
-                            <input type="hidden" name="proyecto_id" id="edit_proy_id">
-                            <div class="mb-3">
-                                <label class="form-label">Título</label>
-                                <input type="text" name="titulo" id="edit_proy_titulo" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Descripción</label>
-                                <textarea name="descripcion" id="edit_proy_descripcion" class="form-control" rows="3" required></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Icono</label>
-                                <input type="text" name="icono" id="edit_proy_icono" class="form-control">
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" name="edit_proyecto" class="btn btn-warning">Actualizar</button>
-                        </div>
-                    </form>
-                </div>
+ <!-- Modal Editar Proyecto -->
+<div class="modal fade" id="editProyectoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title">
+                    <i class="bi bi-pencil"></i> Editar Proyecto
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+            <form method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="proyecto_id" id="edit_proy_id">
+                    <div class="mb-3">
+                        <label class="form-label">Título</label>
+                        <input type="text" name="titulo" id="edit_proy_titulo" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea name="descripcion" id="edit_proy_descripcion" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Icono</label>
+                        <input type="text" name="icono" id="edit_proy_icono" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-github"></i> URL de GitHub
+                        </label>
+                        <input type="url" name="github_url" id="edit_proy_github" class="form-control" 
+                               placeholder="https://github.com/usuario/proyecto">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" name="edit_proyecto" class="btn btn-warning">Actualizar</button>
+                </div>
+            </form>
         </div>
+    </div>
+</div>
     <?php endif; ?>
 </div>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Admin JS -->
+ <script src="assets/js/admin.js"></script>
 </body>
 </html>

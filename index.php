@@ -218,32 +218,41 @@ unset($_SESSION['login_success']);
             </div>
         </section>
 
-        <!-- Proyectos Section -->
-        <section id="proyectos" class="mb-5 pt-4">
-            <h2 class="text-center mb-5">PROYECTOS DESTACADOS</h2>
-            <div class="row g-4">
-                <?php if ($proyectos && count($proyectos) > 0): ?>
-                    <?php foreach ($proyectos as $proyecto): ?>
-                        <div class="col-md-4">
-                            <div class="card shadow-sm card-hover h-100 border-0">
-                                <div class="proyecto-img">
-                                    <i class="bi bi-<?php echo htmlspecialchars($proyecto['icono'] ?? 'folder'); ?>"></i>
-                                </div>
-                                <div class="card-body">
-                                    <h3 class="h5 card-title"><?php echo htmlspecialchars($proyecto['titulo']); ?></h3>
-                                    <p class="card-text text-muted"><?php echo htmlspecialchars($proyecto['descripcion']); ?></p>
-                                    <a href="#" class="btn btn-primary btn-sm">Ver más <i class="bi bi-arrow-right"></i></a>
-                                </div>
+       <!-- Proyectos Section -->
+<section id="proyectos" class="mb-5 pt-4">
+    <h2 class="text-center mb-5">PROYECTOS DESTACADOS</h2>
+    <div class="row g-4">
+        <?php if ($proyectos && count($proyectos) > 0): ?>
+            <?php foreach ($proyectos as $proyecto): ?>
+                <div class="col-md-4">
+                    <div class="card shadow-sm card-hover h-100 border-0">
+                        <div class="proyecto-img">
+                            <i class="bi bi-<?php echo htmlspecialchars($proyecto['icono'] ?? 'folder'); ?>"></i>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="h5 card-title"><?php echo htmlspecialchars($proyecto['titulo']); ?></h3>
+                            <p class="card-text text-muted"><?php echo htmlspecialchars($proyecto['descripcion']); ?></p>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <?php if (!empty($proyecto['github_url'])): ?>
+                                    <a href="<?php echo htmlspecialchars($proyecto['github_url']); ?>" 
+                                       target="_blank" 
+                                       class="btn btn-outline-dark btn-sm"
+                                       title="Ver código en GitHub">
+                                        <i class="bi bi-github"></i> GitHub
+                                    </a>
+                                <?php endif; ?>
                             </div>
                         </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <div class="col-12 text-center">
-                        <div class="alert alert-info">No hay proyectos cargados aún.</div>
                     </div>
-                <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="col-12 text-center">
+                <div class="alert alert-info">No hay proyectos cargados aún.</div>
             </div>
-        </section>
+        <?php endif; ?>
+    </div>
+</section>
 
         <!-- Contacto Section -->
         <section id="contacto" class="mb-5 pt-4">
@@ -298,7 +307,7 @@ unset($_SESSION['login_success']);
             <div class="col-md-4">
                 <img src="assets/img/sonic.png" width="60px" alt="logo">
                 <h5 class="mt-3">MAURICIO INOSTROZA</h5>
-                <p>Desarrollador Web Full Stack</p>
+                <p>Tecnico en Informatica</p>
             </div>
             <div class="col-md-4">
                 <h5>Enlaces Rápidos</h5>
